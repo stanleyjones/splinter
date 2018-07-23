@@ -22,15 +22,18 @@ class Account {
       ipfs.on('error', () => { reject(this.handleError) });
       ipfs.on('ready', async () => {
         this.orbit = new OrbitDb(ipfs);
-        this.feed = await this.loadFeed(this.address);
+        this.feed = await this.loadFeed();
+        this.feeds = await this.loadFollowFeeds();
         resolve(this.feed);
       });
     });
   }
 
-  async loadFeed() {
+  async loadFeed(address) {
+    const options = address ? { sync: true } : orbitConfig;
+    const name = address || `${NAMESPACE}/${this.username}`;
     try {
-      const feed = await this.orbit.open(`${NAMESPACE}/${this.username}`, orbitConfig);
+      const feed = await this.orbit.open(name, options);
       await feed.load();
       return feed;
     } catch (error) {
@@ -38,18 +41,24 @@ class Account {
     }
   }
 
+  async loadFollowFeeds() {
+    const follows = await this.getFollowing();
+    return await Promise.all(follows.map(async follow => await this.loadFeed(follow.address)));
+  }
+
   getInfo() {
     return {
+      id: this.feed.id,
       address: this.feed.address.root,
     };
   }
 
-  async query() {
-    return this.feed.iterator({ limit: -1 }).collect().map(event => event.payload.value);
+  async query(feed = this.feed) {
+    return feed.iterator({ limit: -1 }).collect().map(event => event.payload.value);
   }
 
-  async getPosts() {
-    const messages = await this.query();
+  async getPosts(feed = this.feed) {
+    const messages = await this.query(feed);
     return messages
       .filter(message => message.type === 'post');
   }
@@ -58,46 +67,31 @@ class Account {
     const messages = await this.query();
     return messages
       .filter(message => message.type === 'profile')
-      .reduce((profile, message) => ({ ...profile, ...message.content }), defaultProfile);
+      .reduce((profile, { content }) => ({ ...profile, ...content }), defaultProfile);
   }
 
-  update({ type, ...content }) {
+  async getFollowing() {
+    const messages = await this.query();
+    return messages
+      .filter(message => message.type === 'follow')
+      .reduce((following, { content }) => content.follow
+        ? [...following, content.account]
+        : following,
+      []);
+  }
+
+  async getTimeline() {
+    const myPosts = await this.getPosts();
+    const followPosts = await Promise.all(this.feeds.map(async feed => await this.getPosts(feed)));
+    return followPosts
+      .reduce((posts, feed) => posts.concat(feed), myPosts)
+      .sort((a, b) => a.timestamp < b.timestamp ? -1 : 1);
+  }
+
+  async update({ type, ...content }) {
     const timestamp = new Date();
     try {
-      this.feed.add({ content, timestamp, type });
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  on(event, callback) { return this.events.on(event, callback); }
-
-  setup() {
-    const ipfs = new Ipfs(ipfsConfig);
-    ipfs.on('error', this.handleError);
-    ipfs.on('ready', this.setupOrbit.bind(this));
-      // () => {
-      // const orbit = new OrbitDb(ipfs);
-      // this.feed = new Feed(orbit, this.address || this.username);
-      // this.feed.on('ready', this.emit('ready'));
-      // this.feed.on('write', this.emit('write'));
-      // this.events.emit('ipfs.ready');
-    // });
-
-    // this.on('orbit.ready', this.loadFeed.bind(this));
-  }
-
-  async _setupOrbit() {
-    const orbit = new OrbitDb(this.ipfs);
-    try {
-      const options = this.address ? { sync: true } : orbitConfig;
-      const db = await orbit.open(this.name, options);
-      db.events.on('ready', this.emit('ready'));
-      db.events.on('write', this.emit('update'));
-      await db.load();
-      this.db = db;
-      this.events.emit('loaded');
-      this.events.emit('orbit.ready');
+      await this.feed.add({ content, timestamp, type });
     } catch (error) {
       this.handleError(error);
     }
@@ -105,10 +99,6 @@ class Account {
 
   handleError(error) {
     console.error(error.stack);
-  }
-
-  emit(message) {
-    return () => { this.events.emit(message); }
   }
 }
 

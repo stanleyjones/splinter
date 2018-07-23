@@ -1,12 +1,8 @@
-import Splinter from '../shared/models/Splinter';
+import { createAsyncAction } from 'shared/helpers';
+import Splinter from 'shared/models/Splinter';
 
-export const REFRESH_POSTS = 'posts.refresh';
-export const refreshPosts = () => async dispatch => {
-  dispatch({ type: REFRESH_POSTS });
-  try {
-    const posts = await Splinter.getTimeline();
-    dispatch({ type: REFRESH_POSTS, posts });
-  } catch (e) {
-    dispatch({ type: REFRESH_POSTS, error: e.message });
-  }
-}
+export const GET_TIMELINE = 'GET Timeline...';
+export const getTimeline = createAsyncAction(GET_TIMELINE, () => Splinter.getTimeline());
+
+export const UPDATE_POSTS = 'UPDATE Posts...';
+export const updatePosts = createAsyncAction(UPDATE_POSTS, post => Splinter.updatePosts(post));

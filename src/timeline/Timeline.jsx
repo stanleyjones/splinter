@@ -5,20 +5,23 @@ import { Redirect } from 'react-router-dom';
 import { getSelectedAccount } from '../account/reducer';
 
 import Message from './Message';
-import { refreshPosts } from './actions';
+import { getTimeline, updatePosts } from './actions';
+import { getPosts } from './reducer';
 
 class Timeline extends Component {
   componentDidMount() {
-    if (this.props.profile) { this.props.refreshPosts(this.props.profile.address); }
+    if (this.props.account) { this.props.getTimeline(); }
   }
 
   render() {
-    const { account, posts, refreshPosts } = this.props;
+    const { account, getTimeline, posts, updatePosts } = this.props;
     return account ? (
       <div className="Timeline">
         <h2>Timeline</h2>
+        <button onClick={() => getTimeline()}>Refresh Posts</button>
         <ul>{posts.map(Message)}</ul>
-        <button onClick={() => refreshPosts(account.address)}>Refresh Posts</button>
+        <textarea ref={c => { this.ref = c; }} />
+        <button onClick={() => updatePosts(this.ref.value)}>Post</button>
       </div>
     ) : <Redirect to="/account" />;
   }
@@ -26,11 +29,12 @@ class Timeline extends Component {
 
 const mapStateToProps = state => ({
   account: getSelectedAccount(state),
-  posts: state.timeline.posts,
+  posts: getPosts(state),
 });
 
 const mapDispatchToProps = {
-  refreshPosts,
+  getTimeline,
+  updatePosts,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

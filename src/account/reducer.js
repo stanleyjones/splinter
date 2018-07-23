@@ -1,3 +1,5 @@
+import Splinter from 'shared/models/Splinter';
+
 import { started, success, failure } from 'shared/helpers';
 import { LOADED, LOADING, UNLOADED } from 'shared/constants';
 
@@ -6,7 +8,7 @@ import { CREATE_ACCOUNT, GET_ACCOUNTS, SELECT_ACCOUNT } from './actions';
 const initialState = {
   available: [],
   readyState: UNLOADED,
-  selected: null,
+  selected: Splinter.getAccount(),
 };
 
 export default (state = initialState, { type, payload }) => {

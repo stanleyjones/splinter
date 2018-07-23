@@ -5,6 +5,8 @@ import { NAMESPACE } from '../constants';
 class Splinter {
   constructor() {
     this.account = null;
+    const savedAccount = this.load('account');
+    if (savedAccount) { this.selectAccount(savedAccount); }
   }
 
   // Accounts
@@ -17,6 +19,12 @@ class Splinter {
     return this.saveAccounts([...accounts, { username, address }]);
   }
 
+  getAccount() {
+    const savedAccount = this.load('account');
+    if (!this.account) { this.selectAccount(savedAccount.username); }
+    return savedAccount;
+  }
+
   getAccounts() { return this.load('accounts'); }
 
   saveAccounts(accounts) { return this.save('accounts', accounts); }
@@ -25,6 +33,7 @@ class Splinter {
     const selectedAccount = new Account(username);
     await selectedAccount.init();
     this.account = selectedAccount;
+    this.save('account', { username, address });
     const { address } = selectedAccount.getInfo();
     return { username, address };
   }
@@ -43,23 +52,35 @@ class Splinter {
   // Timeline
 
   async getTimeline() {
-    return await this.account.getPosts();
+    return await this.account.getTimeline();
   }
 
-  postMessage(message) {
-    if (this.status !== 'ready') { return false; }
-    this.account.update({ type: 'post', ...message });
+  async updatePosts(text) {
+    await this.account.update({ type: 'post', text });
+    return await this.account.getTimeline();
+  }
+
+  // Social
+
+  async getFollowing() {
+    return await this.account.getFollowing();
+  }
+
+  async updateFollowing(update) {
+    await this.account.update({ type: 'follow', ...update });
+    return await this.account.getFollowing();
   }
 
   // Helpers
 
-  load(key) {
+  load(key, defaultValue = null) {
     try {
       const valueString = localStorage.getItem(`${NAMESPACE}/${key}`);
       const value = JSON.parse(valueString);
       return value;
-    } catch (e) {
-      this.handleError(e);
+    } catch (error) {
+      console.error(error.stack);
+      return defaultValue;
     }
   }
 
@@ -68,12 +89,10 @@ class Splinter {
       const valueString = JSON.stringify(value);
       localStorage.setItem(`${NAMESPACE}/${key}`, valueString);
       return value;
-    } catch (e) {
-      this.handleError(e);
+    } catch (error) {
+      console.error(error.stack);
     }
   }
-
-  handleError(e) { console.error(e.stack); }
 }
 
 export default new Splinter();
