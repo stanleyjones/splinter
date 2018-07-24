@@ -1,0 +1,8 @@
+.Shell {
+  margin: 1em auto;
+  overflow: hidden;
+}
+
+.Shell .ui.yellow.menu {
+  background-color: #fe0;
+}

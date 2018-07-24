@@ -6,8 +6,8 @@ import { NAMESPACE } from 'shared/constants';
 import { ipfsConfig, orbitConfig } from './config';
 
 const defaultProfile = {
-  description: '',
-  imgUrl: 'http://placekitten.com/200/200',
+  description: 'Here for the free food',
+  imgUrl: 'http://placekitten.com/512/512',
   name: 'Untitled Splinter Account',
 };
 
@@ -85,7 +85,7 @@ class Account {
     const followPosts = await Promise.all(this.feeds.map(async feed => await this.getPosts(feed)));
     return followPosts
       .reduce((posts, feed) => posts.concat(feed), myPosts)
-      .sort((a, b) => a.timestamp < b.timestamp ? -1 : 1);
+      .sort((a, b) => a.timestamp > b.timestamp ? -1 : 1);
   }
 
   async update({ type, ...content }) {

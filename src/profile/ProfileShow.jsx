@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Card, Image } from 'semantic-ui-react';
 
 import { getProfile } from './actions';
 import { getDefaultProfile } from './reducer';
@@ -14,12 +15,15 @@ class ProfileShow extends Component {
     const { profile = {} } = this.props;
     return profile && (
       <div className="ProfileShow">
+        <Card fluid>
+          <Image src={profile.imgUrl} />
+          <Card.Content>
+            <Card.Header>{profile.name}</Card.Header>
+            <Card.Meta>{profile.address}</Card.Meta>
+            <Card.Description>{profile.description}</Card.Description>
+          </Card.Content>
+        </Card>
         <small><Link to="/profile/edit">edit</Link></small>
-
-        <img alt="avatar" src={profile.imgUrl} />
-        <h3>{profile.name}</h3>
-        <code>{profile.address}</code>
-        <p>{profile.description}</p>
       </div>
     );
   }

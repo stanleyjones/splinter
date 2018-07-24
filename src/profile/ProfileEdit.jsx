@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Button, Divider, Form } from 'semantic-ui-react';
 
 import { updateProfile } from './actions';
 import { getDefaultProfile } from './reducer';
 
 class ProfileEdit extends Component {
-  handleChange({ target: { name, value } }) { this.setState({ [name]: value }); }
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = props.profile || {};
+  }
+
+  componentDidUpdate() {
+    this.setState(this.props.profile);
+  }
+
+  handleChange(event, { name, value }) { this.setState({ [name]: value }); }
 
   postForm(event) {
     event.preventDefault();
@@ -13,27 +24,17 @@ class ProfileEdit extends Component {
   }
 
   render() {
+    const { name, imgUrl, description } = this.state;
     return (
       <div className="ProfileEdit">
-        <form onSubmit={ev => this.postForm(ev)}>
+        <Form onSubmit={ev => this.postForm(ev)}>
 
-          <p>
-            <label htmlFor="name">Name</label>
-            <input name="name" onChange={ev => this.handleChange(ev)} />
-          </p>
-
-          <p>
-            <label htmlFor="imgUrl">Avatar URL</label>
-            <input name="imgUrl" onChange={ev => this.handleChange(ev)} />
-          </p>
-
-          <p>
-            <label htmlFor="description">Description</label>
-            <textarea name="description" onChange={ev => this.handleChange(ev)} />
-          </p>
-
-          <button type="submit">Update Profile</button>
-        </form>
+          <Form.Input defaultValue={name} label="Name" name="name" onChange={this.handleChange} />
+          <Form.Input defaultValue={imgUrl} label="Avatar URL" name="imgUrl" onChange={this.handleChange} />
+          <Form.TextArea defaultValue={description} label="Description" name="description" onChange={this.handleChange} />
+          <Divider />
+          <Button primary type="submit">Update Profile</Button>
+        </Form>
       </div>
     );
   }

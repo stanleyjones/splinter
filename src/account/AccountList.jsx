@@ -16,7 +16,7 @@ class AccountList extends Component {
       <div className="AccountList">
         <ul>{availableAccounts.map(({ username, address }, index) =>
           <li key={index}>
-            <span onClick={() => selectAccount(username)}>{username}</span>{' '}
+            <Link to="/" onClick={() => selectAccount(username)}>{username}</Link>{' '}
             (<code>{address}</code>)
           </li>
         )}</ul>

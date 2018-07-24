@@ -9,6 +9,7 @@ export default (props) => (
     <Switch>
       <Route component={AccountCreate} path="/account/create" exact />
       <Route component={AccountList} path="/account" />
+      <Route component={AccountList} path="/login" />
     </Switch>
   </div>
 );

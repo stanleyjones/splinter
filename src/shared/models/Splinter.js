@@ -21,7 +21,7 @@ class Splinter {
 
   getAccount() {
     const savedAccount = this.load('account');
-    if (!this.account) { this.selectAccount(savedAccount.username); }
+    if (savedAccount && !this.account) { this.selectAccount(savedAccount.username); }
     return savedAccount;
   }
 

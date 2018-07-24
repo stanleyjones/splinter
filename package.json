@@ -2,17 +2,6 @@
   "name": "splinter",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "events": "^3.0.0",
-    "orbit-db": "^0.19.8",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-redux": "^5.0.7",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "^1.1.4",
-    "redux": "^3.6.0",
-    "redux-thunk": "^2.3.0"
-  },
   "scripts": {
     "build": "react-scripts build",
     "signal": "star-signal --port=9090 --host=127.0.0.1",
@@ -20,8 +9,22 @@
     "start": "react-scripts start",
     "test": "react-scripts test --env=jsdom"
   },
-  "devDependencies": {
+  "dependencies": {
+    "events": "^3.0.0",
     "ipfs": "^0.29.3",
+    "moment": "^2.22.2",
+    "orbit-db": "^0.19.8",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^1.1.4",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.3.0",
+    "semantic-ui-css": "^2.3.1",
+    "semantic-ui-react": "^0.75.1"
+  },
+  "devDependencies": {
     "orbit-db-cli": "0.0.15",
     "redux-devtools-extension": "^2.13.5"
   }
