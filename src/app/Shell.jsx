@@ -3,13 +3,15 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Icon, Menu } from 'semantic-ui-react';
 
-import { getSelectedAccount } from '../account/reducer';
+import { getAccount } from '../account/actions';
+import { getShouldGetAccounts } from '../account/reducer';
 
 import './Shell.css';
 
 class Shell extends Component {
+  componentDidMount() { if (this.props.shouldGetAccounts) { this.props.getAccount(); } }
+
   render() {
-    const { account, children } = this.props;
     return (
       <Container className="Shell">
         <Menu borderless color="yellow" fixed="top">
@@ -17,15 +19,7 @@ class Shell extends Component {
           <Menu.Item position="right"><Icon name="edit" /></Menu.Item>
         </Menu>
 
-        {account && (
-          <p>
-            <b>Account:</b>{' '}
-            <Link to="/account">{account.username}</Link>{' '}
-            (<code>{account.address}</code>)
-          </p>
-        )}
-
-        {children}
+        {this.props.children}
 
         <Menu color="yellow" fixed="bottom" fluid icon="labeled" widths={4}>
           <Menu.Item as={Link} to="/profile"><Icon name="user" />Profile</Menu.Item>
@@ -39,10 +33,11 @@ class Shell extends Component {
 }
 
 const mapStateToProps = state => ({
-  account: getSelectedAccount(state)
+  shouldGetAccounts: getShouldGetAccounts(state),
 });
 
-const mapDispatchToProps = dispatch => ({
-});
+const mapDispatchToProps = {
+  getAccount,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shell);

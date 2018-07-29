@@ -59,15 +59,23 @@ class Account {
 
   async getPosts(feed = this.feed) {
     const messages = await this.query(feed);
+    const profile = await this.getProfile(feed);
     return messages
-      .filter(message => message.type === 'post');
+      .filter(message => message.type === 'post')
+      .map(message => ({ ...message, profile }));
   }
 
-  async getProfile() {
-    const messages = await this.query();
+  async getProfile(feed = this.feed) {
+    const messages = await this.query(feed);
     return messages
       .filter(message => message.type === 'profile')
       .reduce((profile, { content }) => ({ ...profile, ...content }), defaultProfile);
+  }
+
+  async getProfiles() {
+    const following = await this.getFollowing();
+    const followingProfiles = await Promise.all(this.feeds.map(async feed => await this.getProfile(feed)));
+    return followingProfiles;
   }
 
   async getFollowing() {

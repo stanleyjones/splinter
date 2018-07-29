@@ -15,6 +15,7 @@ class Timeline extends Component {
 
   componentDidMount() {
     if (this.props.account) { this.props.getTimeline(); }
+    this.interval = setInterval(this.props.getTimeline, 30000);
   }
 
   handleChange(event, { value }) { this.setState({ post: value }); }

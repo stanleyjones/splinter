@@ -12,10 +12,6 @@ class ProfileEdit extends Component {
     this.state = props.profile || {};
   }
 
-  componentDidUpdate() {
-    this.setState(this.props.profile);
-  }
-
   handleChange(event, { name, value }) { this.setState({ [name]: value }); }
 
   postForm(event) {

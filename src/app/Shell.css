@@ -1,5 +1,6 @@
 .Shell {
-  margin: 1em auto;
+  margin: 0 auto;
+  padding: 4em 0 10em;
   overflow: hidden;
 }
 

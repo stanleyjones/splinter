@@ -5,8 +5,9 @@ import { NAMESPACE } from '../constants';
 class Splinter {
   constructor() {
     this.account = null;
-    const savedAccount = this.load('account');
-    if (savedAccount) { this.selectAccount(savedAccount); }
+    this.available = this.load('accounts', []);
+    const savedSelection = this.load('account');
+    if (savedSelection) { this.selectAccount(savedSelection); }
   }
 
   // Accounts
@@ -19,13 +20,17 @@ class Splinter {
     return this.saveAccounts([...accounts, { username, address }]);
   }
 
-  getAccount() {
+  async getAccount() {
     const savedAccount = this.load('account');
-    if (savedAccount && !this.account) { this.selectAccount(savedAccount.username); }
+    if (savedAccount && !this.account) { return this.selectAccount(savedAccount.username); }
     return savedAccount;
   }
 
-  getAccounts() { return this.load('accounts'); }
+  async getAccounts() {
+    const available = this.load('accounts', []);
+    const selected = this.selectAccount
+    return this.load('accounts', []);
+  }
 
   saveAccounts(accounts) { return this.save('accounts', accounts); }
 
@@ -33,8 +38,8 @@ class Splinter {
     const selectedAccount = new Account(username);
     await selectedAccount.init();
     this.account = selectedAccount;
-    this.save('account', { username, address });
     const { address } = selectedAccount.getInfo();
+    this.save('account', { username, address });
     return { username, address };
   }
 
@@ -42,6 +47,10 @@ class Splinter {
 
   async getProfile(address) {
     return await this.account.getProfile();
+  }
+
+  async getProfiles() {
+    return await this.account.getProfiles();
   }
 
   async updateProfile(update) {
@@ -77,7 +86,7 @@ class Splinter {
     try {
       const valueString = localStorage.getItem(`${NAMESPACE}/${key}`);
       const value = JSON.parse(valueString);
-      return value;
+      return value || defaultValue;
     } catch (error) {
       console.error(error.stack);
       return defaultValue;

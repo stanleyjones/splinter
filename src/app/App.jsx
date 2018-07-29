@@ -12,14 +12,14 @@ import Shell from './Shell';
 
 import('semantic-ui-css/semantic.min.css');
 
-export default ({ store }) => (
+const App = ({ store }) => (
   <Provider store={store}>
     <Switch>
       <Route component={Account} path="/login" exact />
+      <Route component={Account} path="/register" exact />
       <Route path="/">
         <Shell>
           <Switch>
-            <ProtectedRoute component={Account} path="/account" />
             <ProtectedRoute component={Connect} path="/connect" />
             <ProtectedRoute component={Profile} path="/profile" />
             <ProtectedRoute component={Timeline} path="/" />
@@ -29,3 +29,5 @@ export default ({ store }) => (
     </Switch>
   </Provider>
 );
+
+export default App;

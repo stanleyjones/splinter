@@ -6,3 +6,6 @@ export const updateFollowing = createAsyncAction(UPDATE_FOLLOWING, address => Sp
 
 export const GET_FOLLOWING = 'GET Following...';
 export const getFollowing = createAsyncAction(GET_FOLLOWING, address => Splinter.getFollowing(address));
+
+export const GET_PROFILES = 'GET Profiles...';
+export const getProfiles = createAsyncAction(GET_PROFILES, () => Splinter.getProfiles());

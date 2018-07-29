@@ -1,27 +1,65 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Button, Divider, Form, Image, List, Segment } from 'semantic-ui-react';
 
-import { getFollowing as getFollowed, updateFollowing } from './actions';
-import { getFollowing } from './reducer';
+import { getSelectedAccount } from '../account/reducer';
+
+import { getFollowing as getFollowed, getProfiles, updateFollowing } from './actions';
+import { getFollowing, getAllProfiles } from './reducer';
 
 class Connect extends Component {
+  constructor() {
+    super();
+    this.handleChange = this.handleChange.bind(this);
+    this.submitFollow = this.submitFollow.bind(this);
+  }
+
   componentDidMount() {
     this.props.getFollowed();
+    this.props.getProfiles();
+  }
+
+  handleChange(event, { name, value }) { this.setState({ [name]: value }); }
+
+  submitFollow() {
+    const [username, address] = this.state.followAddress.split('@');
+    const splinterAddress = `/orbitdb/${address}/splinter/${username}`;
+    this.props.updateFollowing(splinterAddress);
   }
 
   render() {
+    const { username, address } = this.props.account;
     return (
       <div className="Connect">
         <h2>Connect</h2>
 
-        <h3>Following</h3>
-        <ul>{this.props.following.map(account =>
-          <li key={account.address}><code>{account.address}</code></li>
-        )}</ul>
+        <h3>Your Splinter Address</h3>
+        <Segment inverted><code>{username}@{address}</code></Segment>
+        <p>Share this address with someone if they'd like to follow you.</p>
 
-        <label htmlFor="follow">Follow by Address</label>
-        <input name="follow" ref={c => this.ref = c} />
-        <button onClick={() => this.props.updateFollowing(this.ref.value)}>Follow</button>
+        <Divider />
+
+        <h3>Follow Someone</h3>
+
+        <Form>
+          <Form.Input label="Splinter Address" name="followAddress" onChange={this.handleChange} />
+          <Button onClick={this.submitFollow}>Follow</Button>
+        </Form>
+
+        <Divider />
+
+        <h3>Your Connections <small>({this.props.profiles.length})</small></h3>
+        <List>
+          {this.props.profiles.map((profile, index) =>
+          <List.Item key={index}>
+            <Image avatar src={profile.imgUrl} />
+            <List.Content>
+              <List.Header>{profile.name}</List.Header>
+              <List.Description>{profile.description}</List.Description>
+            </List.Content>
+          </List.Item>
+          )}
+        </List>
 
       </div>
     );
@@ -29,11 +67,14 @@ class Connect extends Component {
 }
 
 const mapStateToProps = state => ({
+  account: getSelectedAccount(state),
   following: getFollowing(state),
+  profiles: getAllProfiles(state),
 });
 
 const mapDispatchToProps = {
   getFollowed,
+  getProfiles,
   updateFollowing,
 };
 

@@ -1,15 +1,18 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { Container } from 'semantic-ui-react';
 
 import { AccountCreate, AccountList } from '.';
 
-export default (props) => (
-  <div className="Account">
-    <h2>Account</h2>
+import './Account.css';
+
+const AccountRouter = props => (
+  <Container className="Account">
     <Switch>
-      <Route component={AccountCreate} path="/account/create" exact />
-      <Route component={AccountList} path="/account" />
+      <Route component={AccountCreate} path="/register" exact />
       <Route component={AccountList} path="/login" />
     </Switch>
-  </div>
+  </Container>
 );
+
+export default AccountRouter;
