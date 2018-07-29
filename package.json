@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "build": "react-scripts build",
+    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build",
     "signal": "star-signal --port=9090 --host=127.0.0.1",
-    "orbit": "orbitdb",
     "start": "react-scripts start",
     "test": "react-scripts test --env=jsdom"
   },
@@ -25,6 +26,7 @@
     "semantic-ui-react": "^0.75.1"
   },
   "devDependencies": {
+    "gh-pages": "^1.2.0",
     "orbit-db-cli": "0.0.15",
     "redux-devtools-extension": "^2.13.5"
   }
