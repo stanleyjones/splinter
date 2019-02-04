@@ -29,5 +29,8 @@
     "gh-pages": "^1.2.0",
     "orbit-db-cli": "0.0.15",
     "redux-devtools-extension": "^2.13.5"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }
